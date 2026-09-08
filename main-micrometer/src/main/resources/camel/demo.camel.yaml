@@ -1,0 +1,42 @@
+- route:
+    from:
+      uri: timer
+      parameters:
+        timerName: timer1
+        delay: '1000'
+        period: '5000'
+      steps:
+        - setBody:
+            expression:
+              constant:
+                expression: Hello
+        - circuitBreaker:
+            steps:
+              - to:
+                  uri: direct
+                  parameters:
+                    name: echo
+        - log:
+            message: ${body}
+- route:
+    from:
+      uri: direct
+      parameters:
+        name: echo
+      steps:
+        - setBody:
+            simple: '${body}${body}'
+- route:
+    from:
+      uri: direct
+      parameters:
+        name: bye
+      steps:
+        - setBody:
+            constant: 'BYE WORLD'
+        - log:
+            message: ${body}
+- rest:
+    get:
+      - path: /bye
+        to: direct:bye
